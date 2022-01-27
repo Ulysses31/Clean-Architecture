@@ -3,57 +3,73 @@ using CleanArchitecture.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Threading.Tasks;
 
 namespace CleanArchitecture.WebUI
 {
-    public class Program
-    {
-        public async static Task Main(string[] args)
-        {
-            var host = CreateHostBuilder(args).Build();
+	public class Program
+	{
+		public static async Task Main(string[] args)
+		{
+			var host = CreateHostBuilder(args).Build();
 
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
+			using (var scope = host.Services.CreateScope())
+			{
+				var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+				var services = scope.ServiceProvider;
 
-                try
-                {
-                    var context = services.GetRequiredService<ApplicationDbContext>();
+				Log.Logger = new LoggerConfiguration()
+						.ReadFrom.Configuration(configuration)
+						.CreateLogger();
 
-                    if (context.Database.IsSqlServer())
-                    {
-                        context.Database.Migrate();
-                    }                   
+				Log.Information("Starting up...");
 
-                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+				try
+				{
+					var context = services.GetRequiredService<ApplicationDbContext>();
 
-                    await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
-                    await ApplicationDbContextSeed.SeedSampleDataAsync(context);
-                }
-                catch (Exception ex)
-                {
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+					if (context.Database.IsSqlServer())
+					{
+						context.Database.Migrate();
+						Log.Information("Database is Sql Server, starting migration...");
+					}
 
-                    logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+					var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+					var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                    throw;
-                }
-            }
+					await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
+					await ApplicationDbContextSeed.SeedSampleDataAsync(context);
+				}
+				catch (Exception ex)
+				{
+					Log.Fatal(ex, "An error occurred while migrating or seeding the database.");
+					//throw;
+				}
+			}
 
-            await host.RunAsync();
-        }
+			await host.RunAsync();
+		}
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+		public static IHostBuilder CreateHostBuilder(string[] args) =>
+			Host.CreateDefaultBuilder(args)
+				.UseSystemd()
+				.UseSerilog()
+				.ConfigureAppConfiguration((buildCtx, config) =>
+				{
+					config.AddJsonFile($"appsettings.{buildCtx.HostingEnvironment.EnvironmentName}.{Environment.MachineName}.json", optional: true, reloadOnChange: false);
+				})
+				.ConfigureWebHostDefaults(webBuilder =>
+				{
+					webBuilder.ConfigureKestrel(serverOptions =>
+					{
+						serverOptions.AllowSynchronousIO = true;
+					})
+					.UseStartup<Startup>();
+				});
+	}
 }

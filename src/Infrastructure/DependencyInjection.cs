@@ -18,15 +18,21 @@ namespace CleanArchitecture.Infrastructure
 		{
 			if (configuration.GetValue<bool>("UseInMemoryDatabase"))
 			{
-				services.AddDbContext<ApplicationDbContext>(options =>
-					options.UseInMemoryDatabase("CleanArchitectureDb"));
+				services.AddDbContext<ApplicationDbContext>(options => {
+					options.UseInMemoryDatabase("CleanArchitectureDb");
+					options.EnableDetailedErrors(true);
+					options.EnableSensitiveDataLogging(true);
+				});
 			}
 			else
 			{
-				services.AddDbContext<ApplicationDbContext>(options =>
+				services.AddDbContext<ApplicationDbContext>(options => {
 					options.UseSqlServer(
 						configuration.GetConnectionString("DefaultConnection"),
-						b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+						b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
+					options.EnableDetailedErrors(true);
+					options.EnableSensitiveDataLogging(true);
+				});
 			}
 
 			services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
