@@ -1,7 +1,7 @@
 import { Component, TemplateRef } from '@angular/core';
 import {
   TodoItemsClient, CreateTodoItemCommand, TodoItemDto, UpdateTodoItemCommand,
-  TodosVm, TodoListsClient, TodoListDto, CreateTodoListCommand, UpdateTodoListCommand,
+  TodosViewModel, TodoListsClient, TodoListDto, CreateTodoListCommand, UpdateTodoListCommand,
   UpdateTodoItemDetailCommand
 } from '../web-api-client';
 import { faPlus, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
@@ -15,7 +15,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 export class TodoComponent {
   debug = false;
 
-  vm: TodosVm;
+  vm: TodosViewModel;
 
   selectedList: TodoListDto;
   selectedItem: TodoItemDto;
