@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { WeatherForecastClient, WeatherForecastDto } from '../web-api-client';
+import { WeatherForecastDto } from '../api/models/weather-forecast-dto';
+import { WeatherForecastService } from '../api/services/weather-forecast.service';
 
 @Component({
   selector: 'app-fetch-data',
@@ -8,8 +9,8 @@ import { WeatherForecastClient, WeatherForecastDto } from '../web-api-client';
 export class FetchDataComponent {
   public forecasts: WeatherForecastDto[];
 
-  constructor(private client: WeatherForecastClient) {
-    client.get().subscribe(result => {
+  constructor(private client: WeatherForecastService) {
+    client.weatherForecastGet().subscribe(result => {
       this.forecasts = result;
     }, error => console.error(error));
   }

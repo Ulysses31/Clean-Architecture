@@ -1,11 +1,14 @@
 import { Component, TemplateRef } from '@angular/core';
-import {
-  TodoItemsClient, CreateTodoItemCommand, TodoItemDto, UpdateTodoItemCommand,
-  TodosViewModel, TodoListsClient, TodoListDto, CreateTodoListCommand, UpdateTodoListCommand,
-  UpdateTodoItemDetailCommand
-} from '../web-api-client';
 import { faPlus, faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { TodoItemsService } from '../api/services/todo-items.service';
+import { UpdateTodoItemCommand } from '../api/models/update-todo-item-command';
+import { TodoListDto } from '../api/models/todo-list-dto';
+import { TodoItemDto } from '../api/models/todo-item-dto';
+import { UpdateTodoItemDetailCommand } from '../api/models/update-todo-item-detail-command';
+import { TodosViewModel } from '../api/models/todos-view-model';
+import { TodoListsService } from '../api/services/todo-lists.service';
+import { CreateTodoListCommand } from '../api/models/create-todo-list-command';
 
 @Component({
   selector: 'app-todo-component',
@@ -22,7 +25,7 @@ export class TodoComponent {
 
   newListEditor: any = {};
   listOptionsEditor: any = {};
-  itemDetailsEditor: any = {};
+  itemDetailsEditor: UpdateTodoItemDetailCommand = {};
 
   newListModalRef: BsModalRef;
   listOptionsModalRef: BsModalRef;
@@ -32,8 +35,13 @@ export class TodoComponent {
   faPlus = faPlus;
   faEllipsisH = faEllipsisH;
 
-  constructor(private listsClient: TodoListsClient, private itemsClient: TodoItemsClient, private modalService: BsModalService) {
-    listsClient.get().subscribe(
+  constructor(
+    private listsClient: TodoListsService,
+    private itemsClient: TodoItemsService,
+
+    private modalService: BsModalService
+  ) {
+    listsClient.todoListsGet().subscribe(
       result => {
         this.vm = result;
         if (this.vm.lists.length) {
@@ -60,13 +68,15 @@ export class TodoComponent {
   }
 
   addList(): void {
-    let list = TodoListDto.fromJS({
+    let list: TodoListDto = {
       id: 0,
       title: this.newListEditor.title,
       items: [],
-    });
+    };
 
-    this.listsClient.create(<CreateTodoListCommand>{ title: this.newListEditor.title }).subscribe(
+    this.listsClient.todoListsCreate({
+      body: <CreateTodoListCommand> { title: this.newListEditor.title }
+    }).subscribe(
       result => {
         list.id = result;
         this.vm.lists.push(list);
@@ -96,7 +106,10 @@ export class TodoComponent {
   }
 
   updateListOptions() {
-    this.listsClient.update(this.selectedList.id, UpdateTodoListCommand.fromJS(this.listOptionsEditor))
+    this.listsClient.todoListsUpdate({
+      id: this.selectedList.id,
+      body: this.listOptionsEditor
+    })
       .subscribe(
         () => {
           this.selectedList.title = this.listOptionsEditor.title,
@@ -113,7 +126,9 @@ export class TodoComponent {
   }
 
   deleteListConfirmed(): void {
-    this.listsClient.delete(this.selectedList.id).subscribe(
+    this.listsClient.todoListsDelete({
+      id: this.selectedList.id
+    }).subscribe(
       () => {
         this.deleteListModalRef.hide();
         this.vm.lists = this.vm.lists.filter(t => t.id != this.selectedList.id)
@@ -135,13 +150,16 @@ export class TodoComponent {
   }
 
   updateItemDetails(): void {
-    this.itemsClient.updateItemDetails(this.selectedItem.id, UpdateTodoItemDetailCommand.fromJS(this.itemDetailsEditor))
+    this.itemsClient.todoItemsUpdateItemDetails({
+      id: this.selectedItem.id,
+      body: this.itemDetailsEditor
+    })
       .subscribe(
         () => {
-          if (this.selectedItem.listId != this.itemDetailsEditor.listId) {
+          if (this.selectedItem.listId != this.itemDetailsEditor.id) {
             this.selectedList.items = this.selectedList.items.filter(i => i.id != this.selectedItem.id)
-            let listIndex = this.vm.lists.findIndex(l => l.id == this.itemDetailsEditor.listId);
-            this.selectedItem.listId = this.itemDetailsEditor.listId;
+            let listIndex = this.vm.lists.findIndex(l => l.id == this.itemDetailsEditor.id);
+            this.selectedItem.listId = this.itemDetailsEditor.id;
             this.vm.lists[listIndex].items.push(this.selectedItem);
           }
 
@@ -155,13 +173,13 @@ export class TodoComponent {
   }
 
   addItem() {
-    let item = TodoItemDto.fromJS({
+    let item: TodoItemDto = {
       id: 0,
       listId: this.selectedList.id,
       priority: this.vm.priorityLevels[0].value,
       title: '',
       done: false
-    });
+    };
 
     this.selectedList.items.push(item);
     let index = this.selectedList.items.length - 1;
@@ -182,7 +200,9 @@ export class TodoComponent {
     }
 
     if (item.id == 0) {
-      this.itemsClient.create(CreateTodoItemCommand.fromJS({ ...item, listId: this.selectedList.id }))
+      this.itemsClient.todoItemsCreate({
+        body: { ...item, listId: this.selectedList.id }
+      })
         .subscribe(
           result => {
             item.id = result;
@@ -190,7 +210,10 @@ export class TodoComponent {
           error => console.error(error)
         );
     } else {
-      this.itemsClient.update(item.id, UpdateTodoItemCommand.fromJS(item))
+      this.itemsClient.todoItemsUpdate({
+        id: item.id,
+        body: item
+      })
         .subscribe(
           () => console.log('Update succeeded.'),
           error => console.error(error)
@@ -214,7 +237,7 @@ export class TodoComponent {
       let itemIndex = this.selectedList.items.indexOf(this.selectedItem);
       this.selectedList.items.splice(itemIndex, 1);
     } else {
-      this.itemsClient.delete(item.id).subscribe(
+      this.itemsClient.todoItemsDelete({ id: item.id }).subscribe(
         () => this.selectedList.items = this.selectedList.items.filter(t => t.id != item.id),
         error => console.error(error)
       );

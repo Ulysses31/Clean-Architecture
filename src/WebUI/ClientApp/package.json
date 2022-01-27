@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "echo 'Starting...' && ng serve",
     "start:dev": "echo 'Starting (Dev)...' && ng serve --host 0.0.0.0 --disable-host-check",
+    "gen-api-services": "sh node_modules/.bin/ng-openapi-gen --config openapi-gen.json && sh node_modules/.bin/prettier --write \"src/app/api/**/*.{ts,html}\"",
     "build": "ng build",
     "build:ssr": "ng run CleanArchitecture.WebUI:server:dev",
     "test": "ng test",
@@ -52,6 +53,8 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
+    "ng-openapi-gen": "^0.20.0",
+    "prettier": "^2.5.1",
     "typescript": "4.2.4"
   },
   "optionalDependencies": {

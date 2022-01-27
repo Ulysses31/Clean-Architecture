@@ -17,20 +17,19 @@
     },
     "CleanArchitecture.WebUI": {
       "commandName": "Project",
-      "launchBrowser": true,
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      "applicationUrl": "http://localhost:4200"
     },
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
-        "UseInMemoryDatabase": "true",
+        "ASPNETCORE_URLS": "https://+:5001;http://+:5000",
         "ASPNETCORE_HTTPS_PORT": "5001",
-        "ASPNETCORE_URLS": "https://+:5001;http://+:5000"
+        "UseInMemoryDatabase": "true"
       },
       "httpPort": 5000,
       "useSSL": true,
