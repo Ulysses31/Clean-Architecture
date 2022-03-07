@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CleanArchitecture.WebUI</name>
+    </assembly>
+    <members>
+        <member name="T:CleanArchitecture.WebUI.Controllers.V1.LogsController">
+            <summary>
+            LogsController
+            </summary>
+            <seealso cref="T:CleanArchitecture.WebUI.Controllers.ApiControllerBase" />
+        </member>
+        <member name="M:CleanArchitecture.WebUI.Controllers.V1.LogsController.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:CleanArchitecture.WebUI.Controllers.V1.LogsController"/> class.
+            </summary>
+        </member>
+        <member name="M:CleanArchitecture.WebUI.Controllers.V1.LogsController.GetDbLogsWithPagination(CleanArchitecture.Application.MediatR.DbLogs.Queries.GetDbLogsWithPagination.GetDbLogsWithPaginationQuery)">
+            <summary>
+            Gets the database logs with pagination.
+            </summary>
+            <param name="query">The query.</param>
+            <returns>SlApiResponse PaginatedList DbLogDto</returns>
+            <response code="200">Returns list of logs</response>
+        </member>
+        <member name="M:CleanArchitecture.WebUI.Controllers.V1.LogsController.Get(System.Int32)">
+            <summary>
+            Gets the specified identifier.
+            </summary>
+            <param name="id">The identifier.</param>
+            <returns>SlApiResponse DbLogDto></returns>
+        </member>
+    </members>
+</doc>

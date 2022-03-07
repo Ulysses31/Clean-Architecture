@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 
 namespace CleanArchitecture.Application.Common.Interfaces
 {
-    public interface IApplicationDbContext
-    {
-        DbSet<TodoList> TodoLists { get; set; }
-
-        DbSet<TodoItem> TodoItems { get; set; }
-
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-    }
+	public interface IApplicationDbContext
+	{
+		DbSet<DbLog> DbLogs { get; set; }
+		DbSet<TodoList> TodoLists { get; set; }
+		DbSet<TodoItem> TodoItems { get; set; }
+		Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+	}
 }

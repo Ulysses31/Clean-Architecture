@@ -21,20 +21,28 @@ namespace CleanArchitecture.Application.MediatR.TodoLists.Queries.GetTodos
 		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
 
-		public GetTodosQueryHandler(IApplicationDbContext context, IMapper mapper)
+		public GetTodosQueryHandler(
+			IApplicationDbContext context, 
+			IMapper mapper
+		)
 		{
 			_context = context;
 			_mapper = mapper;
 		}
 
-		public async Task<TodosViewModel> Handle(GetTodosQuery request, CancellationToken cancellationToken)
+		public async Task<TodosViewModel> Handle(
+			GetTodosQuery request, 
+			CancellationToken cancellationToken
+		)
 		{
 			return new TodosViewModel
 			{
 				PriorityLevels = Enum.GetValues(typeof(PriorityLevel))
 					.Cast<PriorityLevel>()
-					.Select(p => new PriorityLevelDto { Value = (int)p, Name = p.ToString() })
-					.ToList(),
+					.Select(p => new PriorityLevelDto { 
+						Value = (int)p, 
+						Name = p.ToString() 
+					}).ToList(),
 				Lists = await _context.TodoLists
 					.AsNoTracking()
 					.ProjectTo<TodoListDto>(_mapper.ConfigurationProvider)

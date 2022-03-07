@@ -6,7 +6,6 @@ using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -14,73 +13,78 @@ using System.Threading.Tasks;
 
 namespace CleanArchitecture.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext
-    {
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IDateTime _dateTime;
-        private readonly IDomainEventService _domainEventService;
+	public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext
+	{
+		private readonly ICurrentUserService _currentUserService;
+		private readonly IDateTime _dateTime;
+		private readonly IDomainEventService _domainEventService;
 
-        public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions,
-            ICurrentUserService currentUserService,
-            IDomainEventService domainEventService,
-            IDateTime dateTime) : base(options, operationalStoreOptions)
-        {
-            _currentUserService = currentUserService;
-            _domainEventService = domainEventService;
-            _dateTime = dateTime;
-        }
+		public ApplicationDbContext(
+				DbContextOptions<ApplicationDbContext> options,
+				IOptions<OperationalStoreOptions> operationalStoreOptions,
+				ICurrentUserService currentUserService,
+				IDomainEventService domainEventService,
+				IDateTime dateTime) : base(options, operationalStoreOptions)
+		{
+			_currentUserService = currentUserService;
+			_domainEventService = domainEventService;
+			_dateTime = dateTime;
+		}
 
-        public DbSet<TodoItem> TodoItems { get; set; }
+		public DbSet<DbLog> DbLogs { get; set; }
 
-        public DbSet<TodoList> TodoLists { get; set; }
+		public DbSet<TodoItem> TodoItems { get; set; }
 
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-        {
-            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedBy = _currentUserService.UserId;
-                        entry.Entity.Created = _dateTime.Now;
-                        break;
+		public DbSet<TodoList> TodoLists { get; set; }
 
-                    case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
-                        entry.Entity.LastModified = _dateTime.Now;
-                        break;
-                }
-            }
+		public override async Task<int> SaveChangesAsync(
+			CancellationToken cancellationToken = new CancellationToken()
+		)
+		{
+			foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+			{
+				switch (entry.State)
+				{
+					case EntityState.Added:
+						entry.Entity.CreatedBy = _currentUserService.UserId;
+						entry.Entity.Created = _dateTime.Now;
+						break;
 
-            var events = ChangeTracker.Entries<IHasDomainEvent>()
-                    .Select(x => x.Entity.DomainEvents)
-                    .SelectMany(x => x)
-                    .Where(domainEvent => !domainEvent.IsPublished)
-                    .ToArray();
+					case EntityState.Modified:
+						entry.Entity.LastModifiedBy = _currentUserService.UserId;
+						entry.Entity.LastModified = _dateTime.Now;
+						break;
+				}
+			}
 
-            var result = await base.SaveChangesAsync(cancellationToken);
+			var events = ChangeTracker.Entries<IHasDomainEvent>()
+							.Select(x => x.Entity.DomainEvents)
+							.SelectMany(x => x)
+							.Where(domainEvent => !domainEvent.IsPublished)
+							.ToArray();
 
-            await DispatchEvents(events);
+			var result = await base.SaveChangesAsync(cancellationToken);
 
-            return result;
-        }
+			await DispatchEvents(events);
 
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+			return result;
+		}
 
-            base.OnModelCreating(builder);
-        }
+		protected override void OnModelCreating(ModelBuilder builder)
+		{
+			builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+			builder.Entity<TodoItem>();
+			builder.Entity<TodoList>();
+			base.OnModelCreating(builder);
+		}
 
-        private async Task DispatchEvents(DomainEvent[] events)
-        {
-            foreach (var @event in events)
-            {
-                @event.IsPublished = true;
-                await _domainEventService.Publish(@event);
-            }
-        }
-    }
+		private async Task DispatchEvents(DomainEvent[] events)
+		{
+			foreach (var @event in events)
+			{
+				@event.IsPublished = true;
+				await _domainEventService.Publish(@event);
+			}
+		}
+	}
 }

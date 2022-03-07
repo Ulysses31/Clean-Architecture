@@ -14,11 +14,15 @@ namespace CleanArchitecture.Infrastructure
 {
 	public static class DependencyInjection
 	{
-		public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+		public static IServiceCollection AddInfrastructure(
+			this IServiceCollection services,
+			IConfiguration configuration
+		)
 		{
 			if (configuration.GetValue<bool>("UseInMemoryDatabase"))
 			{
-				services.AddDbContext<ApplicationDbContext>(options => {
+				services.AddDbContext<ApplicationDbContext>(options =>
+				{
 					options.UseInMemoryDatabase("CleanArchitectureDb");
 					options.EnableDetailedErrors(true);
 					options.EnableSensitiveDataLogging(true);
@@ -26,7 +30,8 @@ namespace CleanArchitecture.Infrastructure
 			}
 			else
 			{
-				services.AddDbContext<ApplicationDbContext>(options => {
+				services.AddDbContext<ApplicationDbContext>(options =>
+				{
 					options.UseSqlServer(
 						configuration.GetConnectionString("DefaultConnection"),
 						b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
@@ -35,7 +40,9 @@ namespace CleanArchitecture.Infrastructure
 				});
 			}
 
-			services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+			services.AddScoped<IApplicationDbContext>(
+				provider => provider.GetService<ApplicationDbContext>()
+			);
 
 			services.AddScoped<IDomainEventService, DomainEventService>();
 
@@ -50,6 +57,7 @@ namespace CleanArchitecture.Infrastructure
 			services.AddTransient<IDateTime, DateTimeService>();
 			services.AddTransient<IIdentityService, IdentityService>();
 			services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
+			services.AddTransient<IpAddressService, IpAddressService>();
 
 			services.AddAuthentication()
 				.AddIdentityServerJwt();

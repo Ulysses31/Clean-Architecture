@@ -1,6 +1,8 @@
 using CleanArchitecture.Infrastructure.Identity;
 using CleanArchitecture.Infrastructure.Persistence;
+using CleanArchitecture.Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,10 +24,16 @@ namespace CleanArchitecture.WebUI
 			{
 				var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 				var services = scope.ServiceProvider;
+				var ip = new IpAddressService();
 
 				Log.Logger = new LoggerConfiguration()
-						.ReadFrom.Configuration(configuration)
-						.CreateLogger();
+						 .Enrich.WithProperty("OSVersion", Environment.OSVersion)
+						 .Enrich.WithProperty("ServerName", System.Net.Dns.GetHostName())
+						 .Enrich.WithProperty("UserName", Environment.UserName)
+						 .Enrich.WithProperty("UserDomainName", Environment.UserDomainName)
+						 .Enrich.WithProperty("Address", ip.GetHostIpAddress())
+						 .ReadFrom.Configuration(configuration)
+						 .CreateLogger();
 
 				Log.Information("Starting up...");
 
@@ -61,7 +69,11 @@ namespace CleanArchitecture.WebUI
 				.UseSerilog()
 				.ConfigureAppConfiguration((buildCtx, config) =>
 				{
-					config.AddJsonFile($"appsettings.{buildCtx.HostingEnvironment.EnvironmentName}.{Environment.MachineName}.json", optional: true, reloadOnChange: false);
+					config.AddJsonFile(
+						$"appsettings.{buildCtx.HostingEnvironment.EnvironmentName}.{Environment.MachineName}.json",
+						optional: true,
+						reloadOnChange: false
+					);
 				})
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
