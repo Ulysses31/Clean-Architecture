@@ -2,7 +2,6 @@ using CleanArchitecture.Infrastructure.Identity;
 using CleanArchitecture.Infrastructure.Persistence;
 using CleanArchitecture.Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +13,15 @@ using System.Threading.Tasks;
 
 namespace CleanArchitecture.WebUI
 {
+	/// <summary>
+	/// Program class
+	/// </summary>
 	public class Program
 	{
+		/// <summary>
+		/// Defines the entry point of the application.
+		/// </summary>
+		/// <param name="args">The arguments.</param>
 		public static async Task Main(string[] args)
 		{
 			var host = CreateHostBuilder(args).Build();
@@ -63,6 +69,11 @@ namespace CleanArchitecture.WebUI
 			await host.RunAsync();
 		}
 
+		/// <summary>
+		/// Creates the host builder.
+		/// </summary>
+		/// <param name="args">The arguments.</param>
+		/// <returns>IHostBuilder</returns>
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
 			Host.CreateDefaultBuilder(args)
 				.UseSystemd()

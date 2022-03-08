@@ -94,7 +94,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -157,7 +162,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/TodoItems/{id}": {
@@ -234,7 +244,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -297,7 +312,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/TodoItems/UpdateItemDetails": {
@@ -373,7 +393,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/TodoLists": {
@@ -811,7 +836,7 @@
         ],
         "responses": {
           "400": {
-            "description": "",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -821,7 +846,7 @@
             }
           },
           "401": {
-            "description": "",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -831,7 +856,7 @@
             }
           },
           "406": {
-            "description": "",
+            "description": "Not Acceptable",
             "content": {
               "application/json": {
                 "schema": {
@@ -841,7 +866,7 @@
             }
           },
           "500": {
-            "description": ""
+            "description": "Internal Server Error"
           },
           "default": {
             "description": "",
@@ -854,7 +879,7 @@
             }
           },
           "200": {
-            "description": "Returns list of logs",
+            "description": "PaginatedList DbLogDto",
             "content": {
               "application/json": {
                 "schema": {
@@ -864,7 +889,7 @@
             }
           },
           "404": {
-            "description": "",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
@@ -898,7 +923,7 @@
         ],
         "responses": {
           "400": {
-            "description": "",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -908,7 +933,7 @@
             }
           },
           "401": {
-            "description": "",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -918,7 +943,7 @@
             }
           },
           "406": {
-            "description": "",
+            "description": "Not Acceptable",
             "content": {
               "application/json": {
                 "schema": {
@@ -928,7 +953,7 @@
             }
           },
           "500": {
-            "description": ""
+            "description": "Internal Server Error"
           },
           "default": {
             "description": "",
@@ -941,7 +966,7 @@
             }
           },
           "200": {
-            "description": "SlApiResponse DbLogDto>",
+            "description": "PaginatedList DbLogDto",
             "content": {
               "application/json": {
                 "schema": {
@@ -951,7 +976,7 @@
             }
           },
           "404": {
-            "description": "",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
@@ -968,6 +993,7 @@
         "tags": [
           "Logs"
         ],
+        "summary": "Gets the database logs with pagination.",
         "operationId": "Logs_GetDbLogsWithPagination2",
         "parameters": [
           {
@@ -1000,7 +1026,7 @@
         ],
         "responses": {
           "400": {
-            "description": "",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -1010,7 +1036,7 @@
             }
           },
           "401": {
-            "description": "",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -1020,7 +1046,7 @@
             }
           },
           "406": {
-            "description": "",
+            "description": "Not Acceptable",
             "content": {
               "application/json": {
                 "schema": {
@@ -1030,7 +1056,7 @@
             }
           },
           "500": {
-            "description": ""
+            "description": "Internal Server Error"
           },
           "default": {
             "description": "",
@@ -1043,7 +1069,7 @@
             }
           },
           "200": {
-            "description": "",
+            "description": "PaginatedList DbLogDto",
             "content": {
               "application/json": {
                 "schema": {
@@ -1053,7 +1079,7 @@
             }
           },
           "404": {
-            "description": "",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1070,12 +1096,14 @@
         "tags": [
           "Logs"
         ],
+        "summary": "Gets the specified identifier.",
         "operationId": "Logs_Get2",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The identifier.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -1085,7 +1113,7 @@
         ],
         "responses": {
           "400": {
-            "description": "",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -1095,7 +1123,7 @@
             }
           },
           "401": {
-            "description": "",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -1105,7 +1133,7 @@
             }
           },
           "406": {
-            "description": "",
+            "description": "Not Acceptable",
             "content": {
               "application/json": {
                 "schema": {
@@ -1115,7 +1143,7 @@
             }
           },
           "500": {
-            "description": ""
+            "description": "Internal Server Error"
           },
           "default": {
             "description": "",
@@ -1128,7 +1156,7 @@
             }
           },
           "200": {
-            "description": "",
+            "description": "PaginatedList DbLogDto",
             "content": {
               "application/json": {
                 "schema": {
@@ -1138,7 +1166,7 @@
             }
           },
           "404": {
-            "description": "",
+            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {

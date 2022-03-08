@@ -882,16 +882,28 @@ export interface ILogsClient {
      * @param listId (optional) 
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
-     * @return Returns list of logs
+     * @return PaginatedList DbLogDto
      */
     getDbLogsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<SlApiResponseOfPaginatedListOfDbLogDtoAndObject>;
     /**
      * Gets the specified identifier.
      * @param id The identifier.
-     * @return SlApiResponse DbLogDto>
+     * @return PaginatedList DbLogDto
      */
     get(id: number): Observable<SlApiResponseOfDbLogDtoAndObject>;
+    /**
+     * Gets the database logs with pagination.
+     * @param listId (optional) 
+     * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @return PaginatedList DbLogDto
+     */
     getDbLogsWithPagination2(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<SlApiResponseOfPaginatedListOfDbLogDtoAndObject>;
+    /**
+     * Gets the specified identifier.
+     * @param id The identifier.
+     * @return PaginatedList DbLogDto
+     */
     get2(id: number): Observable<SlApiResponseOfDbLogDtoAndObject>;
 }
 
@@ -913,7 +925,7 @@ export class LogsClient implements ILogsClient {
      * @param listId (optional) 
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
-     * @return Returns list of logs
+     * @return PaginatedList DbLogDto
      */
     getDbLogsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<SlApiResponseOfPaginatedListOfDbLogDtoAndObject> {
         let url_ = this.baseUrl + "/api/v1/Logs?";
@@ -965,25 +977,25 @@ export class LogsClient implements ILogsClient {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
             }));
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result401: any = null;
             let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result401 = ProblemDetails.fromJS(resultData401);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
             }));
         } else if (status === 406) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result406: any = null;
             let resultData406 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result406 = ProblemDetails.fromJS(resultData406);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result406);
+            return throwException("Not Acceptable", status, _responseText, _headers, result406);
             }));
         } else if (status === 500) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
+            return throwException("Internal Server Error", status, _responseText, _headers);
             }));
         } else if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -997,7 +1009,7 @@ export class LogsClient implements ILogsClient {
             let result404: any = null;
             let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
             }));
         } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -1012,7 +1024,7 @@ export class LogsClient implements ILogsClient {
     /**
      * Gets the specified identifier.
      * @param id The identifier.
-     * @return SlApiResponse DbLogDto>
+     * @return PaginatedList DbLogDto
      */
     get(id: number): Observable<SlApiResponseOfDbLogDtoAndObject> {
         let url_ = this.baseUrl + "/api/v1/Logs/{id}";
@@ -1055,25 +1067,25 @@ export class LogsClient implements ILogsClient {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
             }));
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result401: any = null;
             let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result401 = ProblemDetails.fromJS(resultData401);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
             }));
         } else if (status === 406) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result406: any = null;
             let resultData406 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result406 = ProblemDetails.fromJS(resultData406);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result406);
+            return throwException("Not Acceptable", status, _responseText, _headers, result406);
             }));
         } else if (status === 500) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
+            return throwException("Internal Server Error", status, _responseText, _headers);
             }));
         } else if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -1087,7 +1099,7 @@ export class LogsClient implements ILogsClient {
             let result404: any = null;
             let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
             }));
         } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -1099,6 +1111,13 @@ export class LogsClient implements ILogsClient {
         }
     }
 
+    /**
+     * Gets the database logs with pagination.
+     * @param listId (optional) 
+     * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @return PaginatedList DbLogDto
+     */
     getDbLogsWithPagination2(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<SlApiResponseOfPaginatedListOfDbLogDtoAndObject> {
         let url_ = this.baseUrl + "/api/v1.1/Logs?";
         if (listId === null)
@@ -1149,25 +1168,25 @@ export class LogsClient implements ILogsClient {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
             }));
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result401: any = null;
             let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result401 = ProblemDetails.fromJS(resultData401);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
             }));
         } else if (status === 406) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result406: any = null;
             let resultData406 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result406 = ProblemDetails.fromJS(resultData406);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result406);
+            return throwException("Not Acceptable", status, _responseText, _headers, result406);
             }));
         } else if (status === 500) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
+            return throwException("Internal Server Error", status, _responseText, _headers);
             }));
         } else if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -1181,7 +1200,7 @@ export class LogsClient implements ILogsClient {
             let result404: any = null;
             let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
             }));
         } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -1193,6 +1212,11 @@ export class LogsClient implements ILogsClient {
         }
     }
 
+    /**
+     * Gets the specified identifier.
+     * @param id The identifier.
+     * @return PaginatedList DbLogDto
+     */
     get2(id: number): Observable<SlApiResponseOfDbLogDtoAndObject> {
         let url_ = this.baseUrl + "/api/v1.1/Logs/{id}";
         if (id === undefined || id === null)
@@ -1234,25 +1258,25 @@ export class LogsClient implements ILogsClient {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
             }));
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result401: any = null;
             let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result401 = ProblemDetails.fromJS(resultData401);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
             }));
         } else if (status === 406) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result406: any = null;
             let resultData406 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result406 = ProblemDetails.fromJS(resultData406);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result406);
+            return throwException("Not Acceptable", status, _responseText, _headers, result406);
             }));
         } else if (status === 500) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("A server side error occurred.", status, _responseText, _headers);
+            return throwException("Internal Server Error", status, _responseText, _headers);
             }));
         } else if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -1266,7 +1290,7 @@ export class LogsClient implements ILogsClient {
             let result404: any = null;
             let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
             }));
         } else {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
